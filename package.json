@@ -36,7 +36,7 @@
     "url": "git+https://github.com/matchory/docker-source-hash-action.git"
   },
   "scripts": {
-      "postversion": "npm run all",
+    "postversion": "npm run all",
     "format:write": "npx prettier --write .",
     "format:check": "npx prettier --check .",
     "format": "npm run format:write",
@@ -45,5 +45,6 @@
     "package": "npx rollup --config rollup.config.js",
     "all": "npm run format:write && npm run bundle"
   },
-  "type": "module"
+  "type": "module",
+  "version": "1.0.0"
 }
