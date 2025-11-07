@@ -27634,14 +27634,18 @@ async function run() {
   const ignoreFilePaths = coreExports.getMultilineInput("ignore-files", {
     trimWhitespace: true,
   });
+  ignoreFilePaths.sort();
   const ignoreFiles = await Promise.all(
     ignoreFilePaths.map((path) => readFile(path, "utf-8")),
   );
   ignoreFiles.forEach((content) => ignore.add(content));
 
   // Add additional ignore patterns from input
-  coreExports.getMultilineInput("exclude-paths", { trimWhitespace: true })
-    .forEach((path) => ignore.add(path));
+  const excludePaths = coreExports.getMultilineInput("exclude-paths", {
+    trimWhitespace: true,
+  });
+  excludePaths.sort();
+  excludePaths.forEach((path) => ignore.add(path));
 
   // Read all files in the repository recursively
   const paths = await readdir(".", { recursive: true, withFileTypes: true });
@@ -27649,7 +27653,8 @@ async function run() {
   // Filter to include only files and construct their full paths
   const filePaths = paths
     .filter((entry) => entry.isFile())
-    .map(({ parentPath, name }) => join(parentPath, name));
+    .map(({ parentPath, name }) => join(parentPath, name))
+    .toSorted();
   const filteredPaths = ignore.filter(filePaths);
 
   coreExports.setOutput("file-list", filteredPaths.join("\n"));
@@ -27657,10 +27662,13 @@ async function run() {
 
   // Compute SHA-256 hash of the included files
   const contents = await Promise.all(
-    filteredPaths.map((file) => readFile(file, "utf-8")),
+    filteredPaths.map((file) => readFile(file)),
   );
   const hash = createHash("sha256");
-  contents.forEach((content) => hash.update(content));
+
+  [...ignoreFiles, ...excludePaths, ...contents].forEach((content) =>
+    hash.update(content),
+  );
 
   const digest = hash.digest("hex");
   coreExports.info(`SHA-256 Hash of included files: ${digest}`);
