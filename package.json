@@ -4,15 +4,15 @@
     "email": "moritz@matchory.com"
   },
   "dependencies": {
-    "@actions/core": "^1.11.1",
-    "@actions/github": "^6.0.1",
+    "@actions/core": "^3.0.1",
+    "@actions/github": "^9.1.1",
     "@balena/dockerignore": "^1.0.2"
   },
   "description": "A GitHub Action to compute a hash of the Docker build context, ignoring files as per .dockerignore",
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^29.0.0",
+    "@rollup/plugin-commonjs": "^29.0.3",
     "@rollup/plugin-node-resolve": "^16.0.3",
-    "rollup": "^4.52.5"
+    "rollup": "^4.63.1"
   },
   "homepage": "https://github.com/matchory/docker-source-hash-action",
   "keywords": [
