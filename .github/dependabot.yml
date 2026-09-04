@@ -1,5 +1,10 @@
 # Grouped per ecosystem so one upstream release does not arrive as several pull requests.
 #
+# Two grouping mechanisms are in play, because they cover different things:
+#   multi-ecosystem-groups  version updates, collapsed across ecosystems into one PR
+#   groups + applies-to     security updates, which multi-ecosystem groups do NOT cover
+# Without the second block every advisory arrives as its own pull request.
+#
 # The five-day cooldown is a supply-chain control, not a convenience. Most malicious releases in recent
 # memory were detected and yanked within hours, so waiting before adopting a new version neutralises
 # that class of attack. Security updates are unaffected: they are driven by advisories and ignore this.
@@ -24,6 +29,11 @@ updates:
       default-days: 5
     labels:
       - dependencies
+    groups:
+      security:
+        applies-to: security-updates
+        patterns:
+          - '*'
 
   # `/` covers .github/workflows.
   - package-ecosystem: github-actions
@@ -35,3 +45,8 @@ updates:
       default-days: 5
     labels:
       - dependencies
+    groups:
+      security:
+        applies-to: security-updates
+        patterns:
+          - '*'
