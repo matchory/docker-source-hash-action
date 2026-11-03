@@ -1,52 +1,53 @@
-# Grouped per ecosystem so one upstream release does not arrive as several pull requests.
+# Follows the matchory supply chain baseline:
+# https://github.com/matchory/.github/blob/main/supply-chain/STANDARD.md
 #
-# Two grouping mechanisms are in play, because they cover different things:
-#   multi-ecosystem-groups  version updates, collapsed across ecosystems into one PR
-#   groups + applies-to     security updates, which multi-ecosystem groups do NOT cover
-# Without the second block every advisory arrives as its own pull request.
-#
-# The five-day cooldown is a supply-chain control, not a convenience. Most malicious releases in recent
-# memory were detected and yanked within hours, so waiting before adopting a new version neutralises
-# that class of attack. Security updates are unaffected: they are driven by advisories and ignore this.
-
+#   - cooldown: a release must be 3 days old before Dependabot proposes it
+#     (does not delay security updates)
+#   - minor + patch updates arrive as ONE grouped PR per ecosystem
+#   - major updates are never grouped: one PR per dependency, reviewed on its own
+#   - security updates get their own group per ecosystem
 version: 2
 
-multi-ecosystem-groups:
-  app:
-    schedule:
-      interval: weekly
-  github-actions:
-    schedule:
-      interval: weekly
-
 updates:
-  - package-ecosystem: npm
-    multi-ecosystem-group: app
-    directory: /
-    patterns:
-      - '*'
-    cooldown:
-      default-days: 5
-    labels:
-      - dependencies
-    groups:
-      security:
-        applies-to: security-updates
-        patterns:
-          - '*'
-
-  # `/` covers .github/workflows.
   - package-ecosystem: github-actions
-    multi-ecosystem-group: github-actions
     directory: /
-    patterns:
-      - '*'
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Europe/Berlin
     cooldown:
-      default-days: 5
-    labels:
-      - dependencies
+      default-days: 3
+      semver-major-days: 3
+      semver-minor-days: 3
+      semver-patch-days: 3
     groups:
+      minor-and-patch:
+        applies-to: version-updates
+        update-types: [minor, patch]
       security:
         applies-to: security-updates
-        patterns:
-          - '*'
+        patterns: ["*"]
+    labels: [dependencies, github-actions]
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Europe/Berlin
+    cooldown:
+      default-days: 3
+      semver-major-days: 3
+      semver-minor-days: 3
+      semver-patch-days: 3
+    groups:
+      minor-and-patch:
+        applies-to: version-updates
+        update-types: [minor, patch]
+      security:
+        applies-to: security-updates
+        patterns: ["*"]
+    versioning-strategy: increase-if-necessary
+    labels: [dependencies, javascript]
