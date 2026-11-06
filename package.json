@@ -4,7 +4,7 @@
     "email": "moritz@matchory.com"
   },
   "dependencies": {
-    "@actions/core": "^1.11.1",
+    "@actions/core": "^3.0.1",
     "@actions/github": "^6.0.1",
     "@balena/dockerignore": "^1.0.2"
   },
